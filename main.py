@@ -1,6 +1,11 @@
 import httpx
+import logging
 
 
+logging.basicConfig(filename='errors.log',level=logging.error)
+logger = logging.getLogger(__name__)
+
+logger = logging.set
 def write_inspect_file(info:str,file:str='inspect.txt'):
       with open(file,'w') as file_ :
             file_.write(info)
@@ -38,6 +43,9 @@ def construct_url(url:str,method='GET'):
             return
                  
       if not len(url):
+            logger.error('[construct_url() function call] error start here at line 46')
+            logger.error('Invalid Url Format')
+            logger.error('[construct_url() function call] error end here.')
             raise Exception("Insert an actual URL")
       print(url)           
       return url
@@ -92,8 +100,9 @@ def make_api_call():
             write_inspect_file(info)
             print('Check full log in inspect.txt file')
       except Exception as e:
-            print("An error occured -> :")
-            print(e)
+            logger.error("[make_api_call() function call] error start here at line 101.")
+            logger.error(e)
+            logger.error('[make_api_call() function call] error end here.')
             raise e
 
 

@@ -30,6 +30,13 @@ HEADERS_VALUES = list(map(lambda x:x[2],SECURITY_HEADERS))
 
 
 
+INFO_DISCLOSURE_HEADERS = [
+    "server",
+    "x-powered-by",
+    "x-aspnet-version",
+    "x-aspnetmvc-version",
+]
+
 INSPECTOR = ["Severity \t\t Details \t\t \n ------------------------------- \n"]
 def construct_url(url:str,method='GET'):
       if not url.startswith('http') or  not url.startswith('https'):
@@ -49,6 +56,14 @@ def construct_url(url:str,method='GET'):
             raise Exception("Insert an actual URL")
       print(url)           
       return url
+
+def check_info_disclosure_headers(headers):
+      headers_lower = list(map(lambda x: x.lower(), headers.keys()))
+      for header in INFO_DISCLOSURE_HEADERS:
+            if header in headers_lower:
+                  INSPECTOR.append(f"high \t\t Info-disclosure header present: {header}\n  ")
+                  print(f"[WARNING] Info-disclosure header found: {header}")
+
 
 def check_present_headers(headers):
       
@@ -92,6 +107,7 @@ def make_api_call():
       try:
             res = httpx.get(construct_url(url))
            
+            check_info_disclosure_headers(dict(res.headers))
             check_present_headers(dict(res.headers))
             calculate_grade()  
            
